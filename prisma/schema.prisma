@@ -40,7 +40,7 @@ model Tenant {
   customers Customer[]
   orders    Order[]
   products  Product[]
-
+  events    Event[]
 }
 
 model Customer {
@@ -52,7 +52,7 @@ model Customer {
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
   orders    Order[]
-
+  events    Event[]
 }
 
 model Product {
@@ -80,4 +80,21 @@ model Order {
   customerId String?  // Optional since we can't access customer data yet
   customer   Customer? @relation(fields: [customerId], references: [id])
   // Remove productId relation for now since orders can have multiple products
+}
+
+// Event tracking for custom events like cart abandoned, checkout started
+model Event {
+  id          String   @id @default(uuid())
+  type        String   // e.g., "cart_abandoned", "checkout_started", "checkout_completed"
+  shopifyId   String?  // Related Shopify ID (cart, checkout, order)
+  customerEmail String? // Customer email if available
+  data        String?  // JSON data payload
+  createdAt   DateTime @default(now())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  customerId  String?
+  customer    Customer? @relation(fields: [customerId], references: [id])
+  
+  @@index([type, tenantId])
+  @@index([createdAt, tenantId])
 }
