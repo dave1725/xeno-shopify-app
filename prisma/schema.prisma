@@ -30,3 +30,54 @@ model Session {
   collaborator  Boolean?  @default(false)
   emailVerified Boolean?  @default(false)
 }
+
+// Multi-tenant models for Shopify data ingestion
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  shop      String   @unique // Shopify store domain
+  createdAt DateTime @default(now())
+  customers Customer[]
+  orders    Order[]
+  products  Product[]
+
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  shopifyId String   @unique // Shopify customer ID
+  email     String
+  name      String?
+  createdAt DateTime @default(now())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  orders    Order[]
+
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  shopifyId   String   @unique // Shopify product ID
+  title       String
+  handle      String?  // Product handle
+  vendor      String?  // Product vendor
+  productType String?  // Product type
+  price       Float
+  inventory   Int      @default(0) // Stock quantity
+  lowStockThreshold Int @default(10) // Alert threshold
+  createdAt   DateTime @default(now())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+}
+
+model Order {
+  id         String   @id @default(uuid())
+  shopifyId  String   @unique // Shopify order ID
+  totalPrice Float
+  createdAt  DateTime @default(now())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  customerId String?  // Optional since we can't access customer data yet
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  // Remove productId relation for now since orders can have multiple products
+}
