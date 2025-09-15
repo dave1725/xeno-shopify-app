@@ -9,8 +9,8 @@ generator client {
 // enough when changing adapters.
 // See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
 datasource db {
-  provider = "sqlite"
-  url      = "file:dev.sqlite"
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model Session {
@@ -80,6 +80,8 @@ model Order {
   customerId String?  // Optional since we can't access customer data yet
   customer   Customer? @relation(fields: [customerId], references: [id])
   // Remove productId relation for now since orders can have multiple products
+
+  @@map("orders")
 }
 
 // Event tracking for custom events like cart abandoned, checkout started
