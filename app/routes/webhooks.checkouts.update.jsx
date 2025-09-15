@@ -38,7 +38,7 @@ export const action = async ({ request }) => {
         type: eventType,
         shopifyId: payload.id.toString(),
         customerEmail: payload.email,
-        data: JSON.stringify({
+        data: {
           checkoutValue: payload.total_price,
           itemCount: payload.line_items?.length || 0,
           currency: payload.currency,
@@ -55,7 +55,7 @@ export const action = async ({ request }) => {
             price: item.price,
             variant_title: item.variant_title
           })) || []
-        }),
+        },
         tenantId: tenant.id,
         customerId: customer?.id || null,
       },

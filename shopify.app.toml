@@ -2,7 +2,7 @@
 
 client_id = "5cd8d205531b5419565e6121816454b5"
 name = "xeno-retail"
-application_url = "https://127196cf3396.ngrok-free.app"
+application_url = "https://6901992db4c6.ngrok-free.app"
 embedded = true
 handle = "xeno-retail"
 
@@ -26,12 +26,20 @@ api_version = "2025-07"
   uri = "/webhooks/carts/create"
 
   [[webhooks.subscriptions]]
+  topics = [ "carts/update" ]
+  uri = "/webhooks/carts/update"
+
+  [[webhooks.subscriptions]]
   topics = [ "checkouts/create" ]
   uri = "/webhooks/checkouts/create"
 
   [[webhooks.subscriptions]]
   topics = [ "checkouts/update" ]
   uri = "/webhooks/checkouts/update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "checkouts/delete" ]
+  uri = "/webhooks/checkouts/delete"
 
   [[webhooks.subscriptions]]
   topics = [ "customers/create" ]
@@ -57,12 +65,20 @@ api_version = "2025-07"
   topics = [ "products/update" ]
   uri = "/webhooks/products/update"
 
+  [[webhooks.subscriptions]]
+  topics = [ "draft_orders/create" ]
+  uri = "/webhooks/draft_orders/create"
+
+  [[webhooks.subscriptions]]
+  topics = [ "draft_orders/update" ]
+  uri = "/webhooks/draft_orders/update"
+
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_customers,read_orders,write_products"
+scopes = "read_products,read_customers,read_orders,read_checkouts,read_draft_orders,write_products"
 
 [auth]
-redirect_urls = ["https://127196cf3396.ngrok-free.app/auth/callback", "https://127196cf3396.ngrok-free.app/auth/shopify/callback", "https://127196cf3396.ngrok-free.app/api/auth/callback"]
+redirect_urls = ["https://6901992db4c6.ngrok-free.app/auth/callback", "https://6901992db4c6.ngrok-free.app/auth/shopify/callback", "https://6901992db4c6.ngrok-free.app/api/auth/callback"]
 
 [pos]
 embedded = false

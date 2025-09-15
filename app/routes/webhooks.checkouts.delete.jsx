@@ -36,7 +36,7 @@ export const action = async ({ request }) => {
         type: "checkout_abandoned",
         shopifyId: payload.id?.toString(),
         customerEmail: payload.customer?.email,
-        data: JSON.stringify({
+        data: {
           checkoutId: payload.id,
           abandonedValue,
           abandonedItems,
@@ -51,7 +51,7 @@ export const action = async ({ request }) => {
             price: item.price,
             title: item.title
           }))
-        }),
+        },
         tenantId: tenant.id,
         customerId: customer?.id
       }

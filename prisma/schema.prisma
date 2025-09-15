@@ -90,7 +90,7 @@ model Event {
   type        String   // e.g., "cart_abandoned", "checkout_started", "checkout_completed"
   shopifyId   String?  // Related Shopify ID (cart, checkout, order)
   customerEmail String? // Customer email if available
-  data        String?  // JSON data payload
+  data        Json?    // JSON data payload
   createdAt   DateTime @default(now())
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])

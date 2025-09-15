@@ -4,7 +4,7 @@ import prisma from "../db.server";
 export const action = async ({ request }) => {
   const { payload, shop } = await authenticate.webhook(request);
 
-  console.log(`Checkout started for ${shop}:`, payload);
+  console.log(`Cart abandoned for ${shop}:`, payload);
 
   try {
     // Find or create tenant
@@ -17,41 +17,40 @@ export const action = async ({ request }) => {
     let customer = null;
     if (payload.email) {
       customer = await prisma.customer.findFirst({
-        where: { 
+        where: {
           email: payload.email,
-          tenantId: tenant.id 
-        }
+          tenantId: tenant.id,
+        },
       });
     }
 
-    // Store the checkout started event
+    // Store the cart abandoned event
     await prisma.event.create({
       data: {
-        type: "checkout_started",
+        type: "cart_abandoned",
         shopifyId: payload.id.toString(),
         customerEmail: payload.email,
         data: {
-          checkoutValue: payload.total_price,
+          cartValue: payload.total_price,
           itemCount: payload.line_items?.length || 0,
           currency: payload.currency,
-          startedAt: payload.created_at,
-          checkoutToken: payload.token,
-          shippingAddress: payload.shipping_address,
-          items: payload.line_items?.map(item => ({
-            title: item.title,
-            quantity: item.quantity,
-            price: item.price,
-            variant_title: item.variant_title
-          })) || []
+          abandonedAt: payload.updated_at,
+          cartToken: payload.token,
+          items:
+            payload.line_items?.map((item) => ({
+              title: item.title,
+              quantity: item.quantity,
+              price: item.price,
+            })) || [],
         },
         tenantId: tenant.id,
         customerId: customer?.id || null,
       },
     });
 
-    console.log(`Checkout started event stored for ${payload.email || 'guest'}`);
+    console.log(`Cart abandoned event stored for ${payload.email || "guest"}`);
   } catch (error) {
-    console.error("Error storing checkout started event:", error);
+    console.error("Error storing cart abandoned event:", error);
   }
 
   return new Response(null, { status: 200 });
