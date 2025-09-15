@@ -1,0 +1,66 @@
+@startuml
+' Entity-Relationship diagram for Prisma models
+
+entity "Tenant" as Tenant {
+  *id : String [PK]
+  name : String
+  shop : String [unique]
+  createdAt : DateTime
+}
+
+entity "Customer" as Customer {
+  *id : String [PK]
+  shopifyId : String [unique]
+  email : String
+  name : String
+  createdAt : DateTime
+  tenantId : String [FK]
+}
+
+entity "Product" as Product {
+  *id : String [PK]
+  shopifyId : String [unique]
+  title : String
+  handle : String
+  vendor : String
+  productType : String
+  price : Float
+  inventory : Int
+  lowStockThreshold : Int
+  createdAt : DateTime
+  tenantId : String [FK]
+}
+
+entity "Order" as Order {
+  *id : String [PK]
+  shopifyId : String [unique]
+  totalPrice : Float
+  createdAt : DateTime
+  tenantId : String [FK]
+  customerId : String [FK]
+}
+
+entity "Event" as Event {
+  *id : String [PK]
+  type : String
+  shopifyId : String
+  customerEmail : String
+  data : Json
+  createdAt : DateTime
+  tenantId : String [FK]
+  customerId : String [FK]
+}
+
+Tenant ||--o{ Customer : "has"
+Tenant ||--o{ Product : "has"
+Tenant ||--o{ Order : "has"
+Tenant ||--o{ Event : "has"
+Customer ||--o{ Order : "places"
+Customer ||--o{ Event : "triggers"
+Order }o--|| Customer : "belongs to"
+Event }o--|| Customer : "belongs to"
+Event }o--|| Tenant : "belongs to"
+Order }o--|| Tenant : "belongs to"
+Product }o--|| Tenant : "belongs to"
+Customer }o--|| Tenant : "belongs to"
+@enduml
